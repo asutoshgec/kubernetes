@@ -15,29 +15,27 @@ spec:
         app: vprodb
     spec:
       containers:
-       - name: vprodb
-         image: asutoshgec/vprofiledb:latest
-         #iT will ignore the directory called lost+found in the volume when we have formated it
-         args:
-          - "ignore-db-dir=lost+found"
-         volumeMounts:
-          - mountPath: /var/lib/mysql
-            name: vpro-db-data 
-             
-         ports:
-          - name: vprodb-port
-            containerPort: 3306
-         env:
-          - name: MYSQL_ROOT_PASSWORD
-            valueFrom:
-              secretKeyRef:
-                name: app-secret
-                key: db-pass 
+      - name: vprodb
+        image: asutoshgec/vprofiledb:latest
+        args:
+         - "--ignore-db-dir=lost+found"
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: vpro-db-data
+        ports:
+        - name: vprodb-port
+          containerPort: 3306
+        env:
+         - name: MYSQL_ROOT_PASSWORD
+           valueFrom:
+             secretKeyRef:
+               name: app-secret
+               key: db-pass
       nodeSelector:
         zone: ap-south-1a
       volumes:
         - name: vpro-db-data
+          # This AWS EBS volume must already exist.
           awsElasticBlockStore:
-            volumeID: vol-03707b03b07f978e8
-            fsType: ext4
-#volume will not attach to the pod automatically. So we have to give a tag to the volume
+             volumeID: vol-0cf3d659eba6861d4
+             fsType: ext4
