@@ -20,19 +20,19 @@ spec:
         volumeMounts:
          - mountPath: /var/lib/mysql
            name: vpro-db-data
-      volumes:
-       - name: vpro-db-data
-         hostPath:
-# directory location on host
-          path: /data
-# this field is optional
-          type: DirectoryOrCreate
         ports:
-        - name: vprodb-port
-          containerPort: 3306
+         - name: vprodb-port
+           containerPort: 3306
         env:
          - name: MYSQL_ROOT_PASSWORD
            valueFrom:
              secretKeyRef:
                name: app-secret
                key: db-pass
+      volumes:
+       - name: vpro-db-data
+         hostPath:
+# directory location on host
+           path: /data
+# this field is optional
+           type: DirectoryOrCreate
