@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vprodb
+  labels:
+    app: vprodb
+spec:
+  selector:
+    matchLabels:
+      app: vprodb
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: vprodb
+    spec:
+      containers:
+       - name: vprodb
+         image: asutoshgec/vprofiledb:latest
+         #iT will ignore the directory called lost+found in the volume when we have formated it
+         args:
+          - "ignore-db-dir=lost+found"
+         volumeMounts:
+          - mountPath: /var/lib/mysql
+            name: vpro-db-data 
+             
+         ports:
+          - name: vprodb-port
+            containerPort: 3306
+         env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: app-secret
+                key: db-pass 
+      nodeSelector:
+        zone: ap-south-1a
+      volumes:
+        - name: vpro-db-data
+          awsElasticBlockStore:
+            volumeID: vol-03707b03b07f978e8
+            fsType: ext4
+#volume will not attach to the pod automatically. So we have to give a tag to the volume
